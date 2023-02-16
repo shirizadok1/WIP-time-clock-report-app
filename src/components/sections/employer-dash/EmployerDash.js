@@ -34,8 +34,8 @@ const EmployerSection = () => {
   const handleNewEmployeeSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("./data.json", newEmployee);
-      setEmployees([...employees, response.data]);
+      const response = await axios.post("data.json", newEmployee);
+      setEmployees([...employees, response.data.data]);
       setNewEmployee({ name: "", monthlyHours: 0 });
     } catch (error) {
       console.error(error);

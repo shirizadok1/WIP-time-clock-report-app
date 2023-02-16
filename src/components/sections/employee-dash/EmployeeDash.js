@@ -18,7 +18,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     axios
       .get("data.json")
-      .then((res) => setMonthlyReport(res.data))
+      .then((res) => setMonthlyReport(res.data.data))
       .catch((err) => console.log(err));
   }, [monthlyReport]);
 
