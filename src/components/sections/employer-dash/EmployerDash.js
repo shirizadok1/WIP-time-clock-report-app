@@ -9,7 +9,7 @@ const EmployerSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/employees");
+        const response = await axios.get("./data.json");
         setEmployees(response.data);
       } catch (error) {
         console.error(error);
@@ -34,7 +34,7 @@ const EmployerSection = () => {
   const handleNewEmployeeSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/api/employees", newEmployee);
+      const response = await axios.post("./data.json", newEmployee);
       setEmployees([...employees, response.data]);
       setNewEmployee({ name: "", monthlyHours: 0 });
     } catch (error) {
