@@ -1,74 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const EmployerSection = () => {
   const [employees, setEmployees] = useState([]);
-  const [newEmployee, setNewEmployee] = useState({
-    name: '',
-    hourlyRate: 0,
-    hoursWorked: []
-  });
+  const [totalHours, setTotalHours] = useState(0);
+  const [newEmployee, setNewEmployee] = useState({ name: "", monthlyHours: 0 });
 
   useEffect(() => {
-    axios.get('/api/employees')
-      .then(response => setEmployees(response.data))
-      .catch(error => console.log(error));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/employees");
+        setEmployees(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleNewEmployeeSubmit = (event) => {
+  useEffect(() => {
+    const calculateTotalHours = () => {
+      let total = 0;
+      employees.forEach((employee) => {
+        total += employee.monthlyHours;
+      });
+      setTotalHours(total);
+    };
+
+    calculateTotalHours();
+  }, [employees]);
+
+  const handleNewEmployeeSubmit = async (event) => {
     event.preventDefault();
-    axios.post('/api/employees', newEmployee)
-      .then(response => setEmployees([...employees, response.data]))
-      .catch(error => console.log(error));
-  };
-
-  const handleNewEmployeeChange = (event) => {
-    setNewEmployee({
-      ...newEmployee,
-      [event.target.name]: event.target.value
-    });
-  };
-
-  const getTotalHoursWorked = (hoursWorked) => {
-    return hoursWorked.reduce((total, hours) => total + hours, 0);
+    try {
+      const response = await axios.post("/api/employees", newEmployee);
+      setEmployees([...employees, response.data]);
+      setNewEmployee({ name: "", monthlyHours: 0 });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div>
-      <h1>Employer Section</h1>
-      <h2>Employees</h2>
+      <h2>Monthly Report for Each Employee</h2>
       <table>
         <thead>
           <tr>
             <th>Name</th>
-            <th>Hourly Rate</th>
-            <th>Total Hours Worked</th>
-            <th>Actions</th>
+            <th>Monthly Hours</th>
           </tr>
         </thead>
         <tbody>
-          {employees.map(employee => (
+          {employees.map((employee) => (
             <tr key={employee.id}>
               <td>{employee.name}</td>
-              <td>${employee.hourlyRate}</td>
-              <td>{getTotalHoursWorked(employee.hoursWorked)}</td>
-              <td>
-                <button>Edit</button>
-                <button>Delete</button>
-              </td>
+              <td>{employee.monthlyHours}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      <h2>Total Monthly Hours: {totalHours}</h2>
       <h2>Add New Employee</h2>
       <form onSubmit={handleNewEmployeeSubmit}>
         <div>
           <label htmlFor="name">Name:</label>
-          <input type="text" name="name" value={newEmployee.name} onChange={handleNewEmployeeChange} />
+          <input
+            type="text"
+            id="name"
+            value={newEmployee.name}
+            onChange={(event) =>
+              setNewEmployee({ ...newEmployee, name: event.target.value })
+            }
+          />
         </div>
         <div>
-          <label htmlFor="hourlyRate">Hourly Rate:</label>
-          <input type="number" name="hourlyRate" value={newEmployee.hourlyRate} onChange={handleNewEmployeeChange} />
+          <label htmlFor="monthlyHours">Monthly Hours:</label>
+          <input
+            type="number"
+            id="monthlyHours"
+            value={newEmployee.monthlyHours}
+            onChange={(event) =>
+              setNewEmployee({
+                ...newEmployee,
+                monthlyHours: Number(event.target.value),
+              })
+            }
+          />
         </div>
         <button type="submit">Add Employee</button>
       </form>
