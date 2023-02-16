@@ -16,18 +16,11 @@ const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    const fetchMonthlyReport = async () => {
-      try {
-        const response = await axios.get('/api/monthly_report');
-        setMonthlyReport(...monthlyReport,response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchMonthlyReport();
+    axios
+      .get("./data.json")
+      .then((res) => setMonthlyReport(res.data))
+      .catch((err) => console.log(err));
   }, [monthlyReport]);
-
- 
 
   return (
     <div>

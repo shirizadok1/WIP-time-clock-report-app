@@ -1,77 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const EmployerDash = () => {
+const EmployerSection = () => {
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [totalHours, setTotalHours] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [newEmployee, setNewEmployee] = useState({
+    name: '',
+    hourlyRate: 0,
+    hoursWorked: []
+  });
 
   useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get('/api/employees')
-      .then(response => {
-        setEmployees(response.data);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error(error);
-        setIsLoading(false);
-      });
+    axios.get('/api/employees')
+      .then(response => setEmployees(response.data))
+      .catch(error => console.log(error));
   }, []);
 
-  useEffect(() => {
-    if (selectedEmployee) {
-      setIsLoading(true);
-      axios
-        .get(`/api/employees/${selectedEmployee.id}/monthly_report`)
-        .then(response => {
-          setTotalHours(response.data.totalHours);
-          setIsLoading(false);
-        })
-        .catch(error => {
-          console.error(error);
-          setIsLoading(false);
-        });
-    }
-  }, [selectedEmployee]);
-
-  const handleSelectEmployee = employee => {
-    setSelectedEmployee(employee);
+  const handleNewEmployeeSubmit = (event) => {
+    event.preventDefault();
+    axios.post('/api/employees', newEmployee)
+      .then(response => setEmployees([...employees, response.data]))
+      .catch(error => console.log(error));
   };
 
-  const handleAddEmployee = employee => {
-    setEmployees([...employees, employee]);
+  const handleNewEmployeeChange = (event) => {
+    setNewEmployee({
+      ...newEmployee,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const getTotalHoursWorked = (hoursWorked) => {
+    return hoursWorked.reduce((total, hours) => total + hours, 0);
   };
 
   return (
-    <div className="employer-dash">
-      <h2>Employer Dashboard</h2>
-      <div className="employee-list">
-        <h3>Employee List</h3>
-        {isLoading && <p>Loading...</p>}
-        {employees.map(employee => (
-          <p key={employee.id} onClick={() => handleSelectEmployee(employee)}>
-            {employee.name}
-          </p>
-        ))}
-      </div>
-      {selectedEmployee && (
-        <div className="employee-details">
-          <h3>{selectedEmployee.name}</h3>
-          {isLoading && <p>Loading...</p>}
-          {totalHours && (
-            <div>
-              <h4>Total Hours</h4>
-              <p>{totalHours}</p>
-            </div>
-          )}
+    <div>
+      <h1>Employer Section</h1>
+      <h2>Employees</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Hourly Rate</th>
+            <th>Total Hours Worked</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map(employee => (
+            <tr key={employee.id}>
+              <td>{employee.name}</td>
+              <td>${employee.hourlyRate}</td>
+              <td>{getTotalHoursWorked(employee.hoursWorked)}</td>
+              <td>
+                <button>Edit</button>
+                <button>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h2>Add New Employee</h2>
+      <form onSubmit={handleNewEmployeeSubmit}>
+        <div>
+          <label htmlFor="name">Name:</label>
+          <input type="text" name="name" value={newEmployee.name} onChange={handleNewEmployeeChange} />
         </div>
-      )}
-      <button onClick={() => handleAddEmployee()}>Add Employee</button>
+        <div>
+          <label htmlFor="hourlyRate">Hourly Rate:</label>
+          <input type="number" name="hourlyRate" value={newEmployee.hourlyRate} onChange={handleNewEmployeeChange} />
+        </div>
+        <button type="submit">Add Employee</button>
+      </form>
     </div>
   );
 };
 
-export default EmployerDash;
+export default EmployerSection;
