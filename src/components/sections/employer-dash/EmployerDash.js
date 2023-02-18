@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const EmployerSection = () => {
+const EmployerDash = () => {
   const [employees, setEmployees] = useState([]);
-  const [totalHours, setTotalHours] = useState(0);
   const [newEmployee, setNewEmployee] = useState({ name: "", monthlyHours: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("api/data.json");
-        console.log(response.data)
+        console.log(response.data);
         setEmployees(response.data.data);
       } catch (error) {
         console.error(error);
@@ -20,22 +19,10 @@ const EmployerSection = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const calculateTotalHours = () => {
-      let total = 0;
-      employees.forEach((employee) => {
-        total += employee.monthlyHours;
-      });
-      setTotalHours(total);
-    };
-
-    calculateTotalHours();
-  }, [employees]);
-
   const handleNewEmployeeSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("data.json", newEmployee);
+      const response = await axios.post("api/data.json", newEmployee);
       setEmployees([...employees, response.data.data]);
       setNewEmployee({ name: response.data.data.name, monthlyHours: 0 });
     } catch (error) {
@@ -51,18 +38,32 @@ const EmployerSection = () => {
           <tr>
             <th>Name</th>
             <th>Monthly Hours</th>
+            <th>Total Monthly Hours</th>
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.id}>
-              <td>{employee.name}</td>
-              <td>{employee.monthlyHours}</td>
-            </tr>
-          ))}
+          {employees.map((employee) => {
+            let totalHours = 0;
+            employee.hours.forEach((day) => {
+              totalHours += parseFloat(day.end) - parseFloat(day.start);
+            });
+            return (
+              <tr key={employee.id}>
+                <td>{employee.name}</td>
+                <td>
+                  {employee.hours.map((day) => (
+                    <div>
+                      {day.date}: {day.start} - {day.stop}
+                    </div>
+                  ))}
+                </td>
+                <td>{totalHours}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-      <h2>Total Monthly Hours: {totalHours}</h2>
+
       <h2>Add New Employee</h2>
       <form onSubmit={handleNewEmployeeSubmit}>
         <div>
@@ -96,4 +97,4 @@ const EmployerSection = () => {
   );
 };
 
-export default EmployerSection;
+export default EmployerDash;
