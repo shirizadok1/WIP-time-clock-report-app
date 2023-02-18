@@ -17,10 +17,12 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     axios
-      .get("data.json")
+      .get("api/data.json")
       .then((res) => setMonthlyReport(res.data.data))
       .catch((err) => console.log(err));
   }, [monthlyReport]);
+
+  console.log(monthlyReport);
 
   return (
     <div>
@@ -48,7 +50,14 @@ const EmployeeDashboard = () => {
           <ul>
             {monthlyReport.map((report) => (
               <li key={report.id}>
-                {report.date}: {report.startTime} - {report.stopTime}
+                <h3>{report.name}</h3>
+                <ul>
+                  {report.hours.map((day) => (
+                    <li>
+                      {day.date}: {day.start} - {day.stop}
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>

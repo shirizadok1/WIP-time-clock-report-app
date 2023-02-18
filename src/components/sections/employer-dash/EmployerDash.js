@@ -9,8 +9,9 @@ const EmployerSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("./data.json");
-        setEmployees(response.data);
+        const response = await axios.get("api/data.json");
+        console.log(response.data)
+        setEmployees(response.data.data);
       } catch (error) {
         console.error(error);
       }
@@ -36,7 +37,7 @@ const EmployerSection = () => {
     try {
       const response = await axios.post("data.json", newEmployee);
       setEmployees([...employees, response.data.data]);
-      setNewEmployee({ name: "", monthlyHours: 0 });
+      setNewEmployee({ name: response.data.data.name, monthlyHours: 0 });
     } catch (error) {
       console.error(error);
     }
