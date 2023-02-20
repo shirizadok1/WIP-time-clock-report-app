@@ -19,15 +19,9 @@ const EmployerDash = () => {
     fetchData();
   }, []);
 
-  const handleNewEmployeeSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post("api/data.json", newEmployee);
-      setEmployees([...employees, response.data.data]);
-      setNewEmployee({ name: response.data.data.name, monthlyHours: 0 });
-    } catch (error) {
-      console.error(error);
-    }
+  const handleNewEmployeeSubmit = async () => {
+      
+    localStorage.setItem("employees", JSON.stringify(employees));
   };
 
   return (

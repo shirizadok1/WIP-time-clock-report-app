@@ -1,43 +1,57 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const EmployeeDashboard = () => {
+const EmployeeDash = () => {
   const [startTime, setStartTime] = useState(null);
   const [stopTime, setStopTime] = useState(null);
   const [monthlyReport, setMonthlyReport] = useState([]);
   const [showReport, setShowReport] = useState(false);
-
-  const startClock = () => {
-    setStartTime(new Date());
-  };
-
-  const stopClock = () => {
-    setStopTime(new Date());
-  };
 
   useEffect(() => {
     axios
       .get("api/data.json")
       .then((res) => setMonthlyReport(res.data.data))
       .catch((err) => console.log(err));
-  }, [monthlyReport]);
+  }, []);
 
-  console.log(monthlyReport);
+  const handleStartEdit = (reportIndex, dayIndex) => {
+    const updatedMonthlyReport = [...monthlyReport];
+    const selectedDay = updatedMonthlyReport[reportIndex].hours[dayIndex];
+    selectedDay.start = new Date().toString();
+    setMonthlyReport(updatedMonthlyReport);
+    axios
+      .put("api/data.json", { data: updatedMonthlyReport })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
+
+  const handleStopEdit = (reportIndex, dayIndex) => {
+    const updatedMonthlyReport = [...monthlyReport];
+    const selectedDay = updatedMonthlyReport[reportIndex].hours[dayIndex];
+    selectedDay.stop = new Date().toString();
+    setMonthlyReport(updatedMonthlyReport);
+    axios
+      .put("api/data.json", { data: updatedMonthlyReport })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div>
       <h1>Employee Dashboard</h1>
-      <button onClick={startClock}>Start Clock</button>
-      <button onClick={stopClock}>Stop Clock</button>
-      {startTime && (
+      {startTime ? (
         <div>
           <p>Start Time: {startTime.toString()}</p>
         </div>
+      ) : (
+        <button onClick={() => setStartTime(new Date())}>Start Clock</button>
       )}
-      {stopTime && (
+      {stopTime ? (
         <div>
           <p>Stop Time: {stopTime.toString()}</p>
         </div>
+      ) : (
+        <button onClick={() => setStopTime(new Date())}>Stop Clock</button>
       )}
 
       <button onClick={() => setShowReport(!showReport)}>
@@ -48,13 +62,19 @@ const EmployeeDashboard = () => {
         <div>
           <h2>Monthly Report</h2>
           <ul>
-            {monthlyReport.map((report) => (
+            {monthlyReport.map((report, reportIndex) => (
               <li key={report.id}>
                 <h3>{report.name}</h3>
                 <ul>
-                  {report.hours.map((day) => (
-                    <li>
-                      {day.date}: {day.start} - {day.stop}
+                  {report.hours.map((day, dayIndex) => (
+                    <li key={day.date}>
+                      {day.date}: {day.start} - {day.stop}{" "}
+                      {day.start && (
+                        <button onClick={() => handleStartEdit(reportIndex, dayIndex)}>Edit Start</button>
+                      )}
+                      {day.stop && (
+                        <button onClick={() => handleStopEdit(reportIndex, dayIndex)}>Edit End</button>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -67,4 +87,4 @@ const EmployeeDashboard = () => {
   );
 };
 
-export default EmployeeDashboard;
+export default EmployeeDash;
