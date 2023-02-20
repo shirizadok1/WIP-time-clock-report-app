@@ -19,9 +19,19 @@ const EmployerDash = () => {
     fetchData();
   }, []);
 
-  const handleNewEmployeeSubmit = async () => {
-      
-    localStorage.setItem("employees", JSON.stringify(employees));
+  const handleNewEmployeeSubmit = async (event) => {
+    event.preventDefault()
+
+    const newEmployee = {
+      name: "New Employee",
+      hours: [],
+    };
+
+    const updatedEmployees = [...employees, newEmployee];
+
+    localStorage.setItem("employees", JSON.stringify(updatedEmployees));
+    setEmployees(updatedEmployees);
+    console.log(employees);
   };
 
   return (

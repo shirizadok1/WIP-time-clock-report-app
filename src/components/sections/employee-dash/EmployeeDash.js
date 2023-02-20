@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+
 const EmployeeDash = () => {
   const [startTime, setStartTime] = useState(null);
   const [stopTime, setStopTime] = useState(null);
@@ -15,25 +16,11 @@ const EmployeeDash = () => {
   }, []);
 
   const handleStartEdit = (reportIndex, dayIndex) => {
-    const updatedMonthlyReport = [...monthlyReport];
-    const selectedDay = updatedMonthlyReport[reportIndex].hours[dayIndex];
-    selectedDay.start = new Date().toString();
-    setMonthlyReport(updatedMonthlyReport);
-    axios
-      .put("api/data.json", { data: updatedMonthlyReport })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+
   };
 
   const handleStopEdit = (reportIndex, dayIndex) => {
-    const updatedMonthlyReport = [...monthlyReport];
-    const selectedDay = updatedMonthlyReport[reportIndex].hours[dayIndex];
-    selectedDay.stop = new Date().toString();
-    setMonthlyReport(updatedMonthlyReport);
-    axios
-      .put("api/data.json", { data: updatedMonthlyReport })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+   
   };
 
   return (
