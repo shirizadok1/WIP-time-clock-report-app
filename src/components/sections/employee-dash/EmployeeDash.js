@@ -16,12 +16,30 @@ const EmployeeDash = () => {
   }, []);
 
   const handleStartEdit = (reportIndex, dayIndex) => {
-
+    const updatedMonthlyReport = [...monthlyReport];
+    updatedMonthlyReport[reportIndex].hours[dayIndex].start = new Date();
+    localStorage.setItem("monthlyReport", JSON.stringify(updatedMonthlyReport));
+    setMonthlyReport(updatedMonthlyReport);
   };
-
+  
   const handleStopEdit = (reportIndex, dayIndex) => {
-   
+    const updatedMonthlyReport = [...monthlyReport];
+    updatedMonthlyReport[reportIndex].hours[dayIndex].stop = new Date();
+    localStorage.setItem("monthlyReport", JSON.stringify(updatedMonthlyReport));
+    setMonthlyReport(updatedMonthlyReport);
   };
+  
+  useEffect(() => {
+    const storedReport = JSON.parse(localStorage.getItem("monthlyReport"));
+    if (storedReport) {
+      setMonthlyReport(storedReport);
+    } else {
+      axios
+        .get("api/data.json")
+        .then((res) => setMonthlyReport(res.data.data))
+        .catch((err) => console.log(err));
+    }
+  }, []);
 
   return (
     <div>
