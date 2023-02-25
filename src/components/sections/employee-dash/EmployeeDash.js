@@ -29,31 +29,21 @@ const EmployeeDash = () => {
     setMonthlyReport(updatedMonthlyReport);
   };
   
-  useEffect(() => {
-    const storedReport = JSON.parse(localStorage.getItem("monthlyReport"));
-    if (storedReport) {
-      setMonthlyReport(storedReport);
-    } else {
-      axios
-        .get("api/data.json")
-        .then((res) => setMonthlyReport(res.data.data))
-        .catch((err) => console.log(err));
-    }
-  }, []);
+
 
   return (
     <div>
       <h1>Employee Dashboard</h1>
       {startTime ? (
         <div>
-          <p>Start Time: {startTime.toString()}</p>
+          <p>Start Time: {startTime.toLocaleString()}</p>
         </div>
       ) : (
         <button onClick={() => setStartTime(new Date())}>Start Clock</button>
       )}
       {stopTime ? (
         <div>
-          <p>Stop Time: {stopTime.toString()}</p>
+          <p>Stop Time: {stopTime.toLocaleString()}</p>
         </div>
       ) : (
         <button onClick={() => setStopTime(new Date())}>Stop Clock</button>
@@ -73,7 +63,7 @@ const EmployeeDash = () => {
                 <ul>
                   {report.hours.map((day, dayIndex) => (
                     <li key={day.date}>
-                      {day.date}: {day.start} - {day.stop}{" "}
+                      {day.date}: {day.start && day.start.toLocaleString()} - {day.stop && day.stop.toLocaleString()}{" "}
                       {day.start && (
                         <button onClick={() => handleStartEdit(reportIndex, dayIndex)}>Edit Start</button>
                       )}
