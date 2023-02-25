@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-
 const EmployeeDash = () => {
   const [startTime, setStartTime] = useState(null);
   const [stopTime, setStopTime] = useState(null);
@@ -24,15 +23,15 @@ const EmployeeDash = () => {
   
   const handleStopEdit = (reportIndex, dayIndex) => {
     const updatedMonthlyReport = [...monthlyReport];
-    updatedMonthlyReport[reportIndex].hours[dayIndex].stop = new Date();
+    updatedMonthlyReport[reportIndex].hours[dayIndex].end = new Date();
     localStorage.setItem("monthlyReport", JSON.stringify(updatedMonthlyReport));
     setMonthlyReport(updatedMonthlyReport);
   };
-  
 
+  const isStopDisabled = !startTime;
 
   return (
-    <div>
+    <div className="employee-dash">
       <h1>Employee Dashboard</h1>
       {startTime ? (
         <div>
@@ -46,7 +45,7 @@ const EmployeeDash = () => {
           <p>Stop Time: {stopTime.toLocaleString()}</p>
         </div>
       ) : (
-        <button onClick={() => setStopTime(new Date())}>Stop Clock</button>
+        <button onClick={() => setStopTime(new Date())} disabled={isStopDisabled}>Stop Clock</button>
       )}
 
       <button onClick={() => setShowReport(!showReport)}>
@@ -63,11 +62,11 @@ const EmployeeDash = () => {
                 <ul>
                   {report.hours.map((day, dayIndex) => (
                     <li key={day.date}>
-                      {day.date}: {day.start && day.start.toLocaleString()} - {day.stop && day.stop.toLocaleString()}{" "}
+                      {day.date}: {day.start ? day.start.toLocaleString() : '-'} - {day.end ? day.end.toLocaleString() : '-'}{" "}
                       {day.start && (
                         <button onClick={() => handleStartEdit(reportIndex, dayIndex)}>Edit Start</button>
                       )}
-                      {day.stop && (
+                      {day.end && (
                         <button onClick={() => handleStopEdit(reportIndex, dayIndex)}>Edit End</button>
                       )}
                     </li>
