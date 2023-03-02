@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import EmployeeDash from './EmployeeDash.js';
+import EmployeeDash from '../sections/employee-dash/EmployeeDash';
 
 describe('EmployeeDash component', () => {
   let wrapper;
