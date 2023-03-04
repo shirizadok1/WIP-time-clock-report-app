@@ -1,6 +1,6 @@
-const React = require('react');
-const { shallow } = require('enzyme');
-const EmployerDash = require('../sections/employer-dash/EmployerDash').default;
+import React from "react";
+import { shallow } from "enzyme";
+import EmployerDash from "../sections/employer-dash//EmployerDash.js";
 
 describe("EmployerDash component", () => {
   let wrapper;
