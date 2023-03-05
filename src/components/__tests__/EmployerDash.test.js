@@ -1,52 +1,50 @@
 import React from "react";
-import { shallow } from "enzyme";
-import EmployerDash from "../sections/employer-dash//EmployerDash.js";
+import { render, screen, fireEvent } from "@testing-library/react";
+import EmployerDash from "../sections/employer-dash/EmployerDash";
 
 describe("EmployerDash component", () => {
-  let wrapper;
-
   beforeEach(() => {
-    wrapper = shallow(<EmployerDash />);
+    // eslint-disable-next-line testing-library/no-render-in-setup
+    render(<EmployerDash />);
   });
 
   it("renders the component without errors", () => {
-    const component = wrapper.find(".employer-dash");
-    expect(component.length).toBe(1);
+    const component = screen.getByTestId("employer-dash");
+    expect(component).toBeInTheDocument();
   });
 
   it("renders the monthly report table", () => {
-    const table = wrapper.find("table");
-    const th = table.find("thead").find("th");
-    const td = table.find("tbody").find("td");
-    expect(table.length).toBe(1);
+    const table = screen.getByRole("table");
+    const th = screen.getAllByRole("columnheader");
+    const td = screen.queryAllByRole("cell");
+    expect(table).toBeInTheDocument();
     expect(th.length).toBe(3);
     expect(td.length).toBe(0);
   });
 
   it("renders the add employee form", () => {
-    const form = wrapper.find("form");
-    const label = form.find("label");
-    const input = form.find("input");
-    const button = form.find("button");
-    expect(form.length).toBe(1);
+    const form = screen.getByRole("form");
+    const label = screen.getAllByRole("textbox");
+    const input = screen.getAllByRole("textbox");
+    const button = screen.getByRole("button", { name: /add employee/i });
+    expect(form).toBeInTheDocument();
     expect(label.length).toBe(2);
     expect(input.length).toBe(2);
-    expect(button.length).toBe(1);
+    expect(button).toBeInTheDocument();
   });
 
   it("adds a new employee to the list when the form is submitted", () => {
-    const form = wrapper.find("form");
-    const nameInput = form.find("#name");
-    const hoursInput = form.find("#monthlyHours");
-    const submitButton = form.find("button[type='submit']");
+    const nameInput = screen.getByLabelText(/employee name/i);
+    const hoursInput = screen.getByLabelText(/monthly hours/i);
+    const submitButton = screen.getByRole("button", { name: /add employee/i });
     const mockEvent = { preventDefault: jest.fn() };
-    nameInput.simulate("change", { target: { value: "John Doe" } });
-    hoursInput.simulate("change", { target: { value: 160 } });
-    submitButton.simulate("submit", mockEvent);
+    fireEvent.change(nameInput, { target: { value: "John Doe" } });
+    fireEvent.change(hoursInput, { target: { value: 160 } });
+    fireEvent.click(submitButton, mockEvent);
     expect(mockEvent.preventDefault).toHaveBeenCalled();
     const updatedEmployees = JSON.parse(localStorage.getItem("employees"));
     expect(updatedEmployees.length).toBe(1);
-    expect(updatedEmployees[0].name).toBe("New Employee");
+    expect(updatedEmployees[0].name).toBe("John Doe");
     expect(updatedEmployees[0].hours).toEqual([]);
   });
 });
