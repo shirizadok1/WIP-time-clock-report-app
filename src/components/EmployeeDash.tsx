@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const EmployeeDash = () => {
@@ -20,7 +20,7 @@ const EmployeeDash = () => {
     localStorage.setItem("monthlyReport", JSON.stringify(updatedMonthlyReport));
     setMonthlyReport(updatedMonthlyReport);
   };
-  
+
   const handleStopEdit = (reportIndex, dayIndex) => {
     const updatedMonthlyReport = [...monthlyReport];
     updatedMonthlyReport[reportIndex].hours[dayIndex].end = new Date();
@@ -80,5 +80,6 @@ const EmployeeDash = () => {
     </div>
   );
 };
+
 
 export default EmployeeDash;

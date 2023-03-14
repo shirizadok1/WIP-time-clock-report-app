@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import EmployeeDash from '../sections/employee-dash/EmployeeDash';
+import EmployeeDash from '../EmployeeDash';
 
 describe('EmployeeDash component', () => {
   beforeEach(() => {
